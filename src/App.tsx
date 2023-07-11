@@ -1,35 +1,20 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { WindowButton } from "./components/Window-Button";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <main className="bg-slate-500 h-screen flex items-center justify-center text-gray-100">
+      {/* className="bg-slate-500 w-4/5 h-1/2 " */}
+      <div className="bg-slate-900 w-4/5 h-4/5 items-center p-2 rounded-md" >
+        <div className="flex gap-1">
+          <WindowButton color="#ed6a5e" />
+          <WindowButton color="#f4bf4f" />
+          <WindowButton color="#61c554" />
+        </div>
+
+        <h1>VIDEO PLAYER</h1>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </main>
+  );
 }
 
-export default App
+export default App;
