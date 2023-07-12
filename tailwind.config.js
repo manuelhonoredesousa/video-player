@@ -6,7 +6,11 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: {
+        'wallpaper': "url('./assets/ventura-wallpaper.jpg')",
+      }
+    },
   },
   plugins: [],
 }
