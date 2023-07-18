@@ -8,10 +8,10 @@ export default {
   theme: {
     extend: {
       backgroundImage: {
-        'wallpaper': "url('./assets/ventura-wallpaper.jpg')",
+        'wallpaper': "url('./assets/wallpaper.jpg')",
       }
     },
   },
-  plugins: [],
+  plugins: [ require('@tailwindcss/forms')],
 }
 
