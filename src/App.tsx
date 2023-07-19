@@ -19,6 +19,7 @@ import {
   // IoScan,
 } from "react-icons/io5";
 import videoPath from "./../../../../Users/Manuel/Videos/Rap do Deadpool - Tauz RapTributo 15.mp4";
+// import videoPath from "./../../../../Users/Manuel/Desktop/ /Top Gun - Maverick 2022.mp4";
 import { WindowButton } from "./components/Window-Button";
 import usePlayer from "./hooks/usePlayer";
 import { ChangeEvent, useRef, useState } from "react";
@@ -40,14 +41,21 @@ function App() {
     currentVideoHour,
     currentVideoMinutes,
     currentVideoSeconds,
+    currentPercentage,
+    totalVideoHours,
+    totalVideoMinutes,
+    totalVideoSeconds,
     setVolume,
     setPlayingState,
     openFullScreen,
     openPictureInPicture,
     handleOnTimeVideoUpdate,
     handleOnChangeVideo,
-    currentPercentage,
+    handleOnLoadVideo
+    
   } = usePlayer($videoPlayer);
+
+  // handleOnLoadVideo()
 
   return (
     <main className="bg-wallpaper bg-no-repeat bg-cover bg-center h-screen flex items-center justify-center text-gray-100 relative">
@@ -65,13 +73,15 @@ function App() {
           src={videoPath}
           ref={$videoPlayer}
           onTimeUpdate={handleOnTimeVideoUpdate}
+          onLoadedData={handleOnLoadVideo}
+        
           // autoPlay
           // controls
         ></video>
 
         <div className="bg-opacity-10 backdrop-blur-lg bg-white absolute left-[12.5%] top-[70%] h-[10%] flex flex-col p-4 w-[75%] items-center rounded-lg">
           <div className="w-full flex gap-2 items-center">
-            <label htmlFor="">{`02:${currentVideoMinutes}:${currentVideoSeconds}`}</label>
+            <label htmlFor="">{`${currentVideoHour}:${currentVideoMinutes}:${currentVideoSeconds}`}</label>
             <input
               type="range"
               className="flex-1 range accent-[#cf6247] h-1 transition"
@@ -81,7 +91,7 @@ function App() {
               onChange={handleOnChangeVideo}
               // onTimeUpdate={()=>console.log(5555)}
             />
-            <label htmlFor="">12:35:46</label>
+            <label htmlFor="">{`${totalVideoHours}:${totalVideoMinutes}:${totalVideoSeconds}`}</label>
           </div>
 
           <div className="flex  w-full items-center justify-around gap-2  ">

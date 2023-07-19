@@ -17,6 +17,9 @@ export default function usePlayer(
       currentVideoHour,
       currentVideoMinutes,
       currentVideoSeconds,
+      totalVideoHours,
+      totalVideoMinutes,
+      totalVideoSeconds,
     },
     setPlayerProprieties,
   ] = useState({
@@ -27,15 +30,21 @@ export default function usePlayer(
     currentVideoHour: "00",
     currentVideoMinutes: "00",
     currentVideoSeconds: "00",
+    totalVideoHours: "00",
+    totalVideoMinutes: "00",
+    totalVideoSeconds: "00",
   });
 
   useEffect(() => {
     isPlaying ? $videoPlayer.current?.play() : $videoPlayer.current?.pause();
 
     const volumeValue = volume / 100;
-
     $videoPlayer.current!.volume = volumeValue;
   }, [$videoPlayer, isPlaying, volume]);
+
+  // useEffect(() => {
+  // setTotalVideoTimeLabel()
+  // }, [$videoPlayer.current?.duration]);
 
   function openFullScreen() {
     void $videoPlayer.current?.requestFullscreen();
@@ -47,17 +56,17 @@ export default function usePlayer(
   // setCurrentTime(videoRef.current.currentTime);
   // };
 
-  function currentVideoTime() {
-    const totalSeconds = Math.floor($videoPlayer.current!.currentTime);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
+  // function currentVideoTime() {
+  //   const totalSeconds = Math.floor($videoPlayer.current!.currentTime);
+  //   const minutes = Math.floor(totalSeconds / 60);
+  //   const seconds = totalSeconds % 60;
 
-    return {
-      minutes,
-      seconds,
-      //// seconds,
-    };
-  }
+  //   return {
+  //     minutes,
+  //     seconds,
+  //     //// seconds,
+  //   };
+  // }
 
   function setPlayingState() {
     setPlayerProprieties((prev) => {
@@ -104,9 +113,36 @@ export default function usePlayer(
       };
     });
   }
+  function handleOnLoadVideo() {
+    setTotalVideoTimeLabel();
+    setCurrentTimeLabel({ hours: "00", minutes: "00", seconds: "00" });
+    setPercentage(0)
+  }
+  function setTotalVideoTimeLabel() {
+    const { duration } = getCurrentVideoPropreties();
+    const { hours, minutes, seconds } = getVideoTimeByPercentageAndDuration({
+      duration,
+      percentage: 100,
+    });
+
+    setPlayerProprieties((prev) => {
+      return {
+        ...prev,
+        totalVideoHours: hours,
+        totalVideoMinutes: minutes,
+        totalVideoSeconds: seconds,
+      };
+    });
+  }
 
   function handleOnTimeVideoUpdate() {
-    const { percentage, hours, minutes, seconds } = getCurrentVideoPropreties();
+    const { percentage, duration } = getCurrentVideoPropreties();
+
+    const { hours, minutes, seconds } = getVideoTimeByPercentageAndDuration({
+      duration,
+      percentage,
+    });
+
     setPercentage(percentage);
     setCurrentTimeLabel({ hours, minutes, seconds });
   }
@@ -128,14 +164,15 @@ export default function usePlayer(
   }) {
     const totalSeconds = Math.floor((duration / 100) * percentage);
 
-    const hours = "00";
-    const minutes = beatifyCurrentTime(Math.floor(totalSeconds / 60));
+    const hours = beatifyCurrentTime(Math.floor(totalSeconds / 60 / 60));
+    const minutes = beatifyCurrentTime(Math.floor((totalSeconds % 3600) / 60));
     const seconds = beatifyCurrentTime(totalSeconds % 60);
 
     return {
       hours,
       minutes,
       seconds,
+      totalSeconds,
     };
   }
 
@@ -144,18 +181,13 @@ export default function usePlayer(
     const videoDuration = $videoPlayer.current!.duration;
     const newCurrentPercentage = (videoCurrentTime / videoDuration) * 100;
 
-    const { hours, minutes, seconds } = getVideoTimeByPercentageAndDuration({
-      duration: videoDuration,
-      percentage: newCurrentPercentage,
-    });
-
     return {
       time: videoCurrentTime,
       duration: videoDuration,
       percentage: newCurrentPercentage,
-      hours,
-      minutes,
-      seconds,
+      // hours,
+      // minutes,
+      // seconds,
     };
   }
 
@@ -193,11 +225,15 @@ export default function usePlayer(
     currentVideoHour,
     currentVideoMinutes,
     currentVideoSeconds,
+    totalVideoHours,
+    totalVideoMinutes,
+    totalVideoSeconds,
     setPlayingState,
     openFullScreen,
     openPictureInPicture,
     setVolume,
     handleOnTimeVideoUpdate,
     handleOnChangeVideo,
+    handleOnLoadVideo,
   };
 }
