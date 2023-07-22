@@ -14,6 +14,7 @@ export default function usePlayer(
       isPlaying,
       volume,
       currentPercentage,
+      playbackSpeed,
       currentVideoHour,
       currentVideoMinutes,
       currentVideoSeconds,
@@ -25,6 +26,7 @@ export default function usePlayer(
   ] = useState({
     isPlaying: false,
     volume: volumeAtLocalStorage,
+    playbackSpeed: 1,
     currentTime: 0,
     currentPercentage: 0,
     currentVideoHour: "00",
@@ -40,7 +42,10 @@ export default function usePlayer(
 
     const volumeValue = volume / 100;
     $videoPlayer.current!.volume = volumeValue;
-  }, [$videoPlayer, isPlaying, volume]);
+
+    $videoPlayer.current!.playbackRate = playbackSpeed;
+
+  }, [$videoPlayer, isPlaying, volume, playbackSpeed]); 
 
   // useEffect(() => {
   // setTotalVideoTimeLabel()
@@ -116,7 +121,7 @@ export default function usePlayer(
   function handleOnLoadVideo() {
     setTotalVideoTimeLabel();
     setCurrentTimeLabel({ hours: "00", minutes: "00", seconds: "00" });
-    setPercentage(0)
+    setPercentage(0);
   }
   function setTotalVideoTimeLabel() {
     const { duration } = getCurrentVideoPropreties();
@@ -134,7 +139,35 @@ export default function usePlayer(
       };
     });
   }
+  
+  function setSpeedUpVideo() {
+    const newPlaybackSpeed = 0.25;
+    const newPlaybackSpeedLimite = 2;
 
+    
+    if (playbackSpeed < newPlaybackSpeedLimite) {
+      console.log(playbackSpeed);
+      setPlayerProprieties((prev) => {
+        return {
+          ...prev,
+          playbackSpeed: prev.playbackSpeed + newPlaybackSpeed ,
+        };
+      });
+    }
+  }
+  function setSlowDownVideo() {
+    const newPlaybackSpeed = 0.25;
+    const newPlaybackSpeedLimite = 0.25;
+
+    if (playbackSpeed > newPlaybackSpeedLimite) {
+      setPlayerProprieties((prev) => {
+        return {
+          ...prev,
+          playbackSpeed:  prev.playbackSpeed - newPlaybackSpeed,
+        };
+      });
+    }
+  }
   function handleOnTimeVideoUpdate() {
     const { percentage, duration } = getCurrentVideoPropreties();
 
@@ -228,6 +261,7 @@ export default function usePlayer(
     totalVideoHours,
     totalVideoMinutes,
     totalVideoSeconds,
+    playbackSpeed,
     setPlayingState,
     openFullScreen,
     openPictureInPicture,
@@ -235,5 +269,7 @@ export default function usePlayer(
     handleOnTimeVideoUpdate,
     handleOnChangeVideo,
     handleOnLoadVideo,
+    setSpeedUpVideo,
+    setSlowDownVideo,
   };
 }

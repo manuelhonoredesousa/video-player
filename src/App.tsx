@@ -45,21 +45,30 @@ function App() {
     totalVideoHours,
     totalVideoMinutes,
     totalVideoSeconds,
+    playbackSpeed,
     setVolume,
     setPlayingState,
     openFullScreen,
     openPictureInPicture,
     handleOnTimeVideoUpdate,
     handleOnChangeVideo,
-    handleOnLoadVideo
+    handleOnLoadVideo,
+    setSpeedUpVideo,
+setSlowDownVideo
     
   } = usePlayer($videoPlayer);
 
   // handleOnLoadVideo()
+  function handlePlaybackSpeedUp(){
+    setSpeedUpVideo({})
+  }
+  function handlePlaybackSlowDown(){
+    setSlowDownVideo({})
+  }
 
   return (
-    <main className="bg-wallpaper bg-no-repeat bg-cover bg-center h-screen flex items-center justify-center text-gray-100 relative">
-      <div className="bg-[#fdf8f4] w-4/5 items-center rounded-lg ">
+    <main className="bg-wallpaper bg-no-repeat bg-cover bg-center h-screen flex items-center justify-center text-gray-100 ">
+      <div className="bg-[#fdf8f4] w-4/5 items-center rounded-lg relative">
         {/* <div className="bg-[red] w-4/5 items-center rounded-lg"> */}
 
         <div className="flex gap-1 p-2">
@@ -67,6 +76,8 @@ function App() {
           <WindowButton color="#f4bf4f" />
           <WindowButton color="#61c554" />
         </div>
+
+        <div className="absolute top-[10%] left-[50%] text-center text-lg  opacity-90 font-bold">{playbackSpeed != 1 && `${playbackSpeed} X`}</div>
 
         <video
           className="w-full aspect-video object-cover rounded-b-lg"
@@ -78,7 +89,6 @@ function App() {
           // autoPlay
           // controls
         ></video>
-
         <div className="bg-opacity-10 backdrop-blur-lg bg-white absolute left-[12.5%] top-[70%] h-[10%] flex flex-col p-4 w-[75%] items-center rounded-lg">
           <div className="w-full flex gap-2 items-center">
             <label htmlFor="">{`${currentVideoHour}:${currentVideoMinutes}:${currentVideoSeconds}`}</label>
@@ -107,7 +117,7 @@ function App() {
             </div>
 
             <div className="flex flex-1 justify-center gap-2 items-center ">
-              <Icon icon={IoPlayBack} />
+              <Icon icon={IoPlayBack} onClickFunction={()=>setSlowDownVideo()} />
 
               {isPlaying ? (
                 <Icon
@@ -123,7 +133,7 @@ function App() {
                 />
               )}
 
-              <Icon icon={IoPlayForward} />
+              <Icon icon={IoPlayForward} onClickFunction={()=>setSpeedUpVideo()} />
             </div>
 
             <div className="flex flex-1 flex-row justify-end  gap-2">
