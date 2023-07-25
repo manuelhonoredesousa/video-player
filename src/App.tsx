@@ -21,7 +21,7 @@ import {
 import videoPath from "./../../../../Users/Manuel/Videos/Rap do Deadpool - Tauz RapTributo 15.mp4";
 // import videoPath from "./../../../../Users/Manuel/Desktop/ /Top Gun - Maverick 2022.mp4";
 import { WindowButton } from "./components/Window-Button";
-import usePlayer from "./hooks/usePlayer";
+import { usePlayer, PlaybackSpeedOptionType } from "./hooks/usePlayer";
 import { ChangeEvent, useRef, useState } from "react";
 import { Icon } from "./components/Icon";
 import { Volume } from "./components/Volume";
@@ -53,22 +53,40 @@ function App() {
     handleOnTimeVideoUpdate,
     handleOnChangeVideo,
     handleOnLoadVideo,
-    setSpeedUpVideo,
-setSlowDownVideo
-    
+    setPlaybackSpeed,
   } = usePlayer($videoPlayer);
 
+  const [mouseOverPlayer, setMouseOverPlayer] = useState<boolean>(false);
   // handleOnLoadVideo()
-  function handlePlaybackSpeedUp(){
-    setSpeedUpVideo({})
+  // function handlePlaybackSpeedUp(){
+  //   setSpeedUpVideo({})
+  // }
+
+  function handlePlaybackSpeed(opt: PlaybackSpeedOptionType) {
+    if (isPlaying) setPlaybackSpeed({ options: opt });
   }
-  function handlePlaybackSlowDown(){
-    setSlowDownVideo({})
+
+  function handlePlayAndPause() {
+    if (playbackSpeed == 1) {
+      setPlayingState();
+    } else {
+      setPlaybackSpeed({ reset: true });
+    }
+  }
+  function handleOnMouseOverVideo(opt: "Over" | "Out") {
+    if (opt == "Over") {
+      setMouseOverPlayer(true);
+    } else {
+      setMouseOverPlayer(false);
+    }
   }
 
   return (
     <main className="bg-wallpaper bg-no-repeat bg-cover bg-center h-screen flex items-center justify-center text-gray-100 ">
-      <div className="bg-[#fdf8f4] w-4/5 items-center rounded-lg relative">
+      <div className="bg-[#fdf8f4] w-4/5 items-center rounded-lg relative"
+        onMouseEnter={() => handleOnMouseOverVideo("Over")}
+        onMouseLeave={() => handleOnMouseOverVideo("Out")}
+      >
         {/* <div className="bg-[red] w-4/5 items-center rounded-lg"> */}
 
         <div className="flex gap-1 p-2">
@@ -77,7 +95,9 @@ setSlowDownVideo
           <WindowButton color="#61c554" />
         </div>
 
-        <div className="absolute top-[10%] left-[50%] text-center text-lg  opacity-90 font-bold">{playbackSpeed != 1 && `${playbackSpeed} X`}</div>
+        <div className="absolute top-[10%] left-1/2 text-center text-3xl opacity-90 font-bold">
+          {playbackSpeed != 1 && `${playbackSpeed} X`}
+        </div>
 
         <video
           className="w-full aspect-video object-cover rounded-b-lg"
@@ -86,10 +106,14 @@ setSlowDownVideo
           onTimeUpdate={handleOnTimeVideoUpdate}
           onLoadedData={handleOnLoadVideo}
         
+
           // autoPlay
           // controls
         ></video>
-        <div className="bg-opacity-10 backdrop-blur-lg bg-white absolute left-[12.5%] top-[70%] h-[10%] flex flex-col p-4 w-[75%] items-center rounded-lg">
+        <div
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+          className={`bg-opacity-10 backdrop-blur-lg bg-white absolute left-[12.5%] bottom-[5%] flex flex-col p-2 w-[75%] items-center rounded-lg ${!mouseOverPlayer && "hidden"}`}
+        >
           <div className="w-full flex gap-2 items-center">
             <label htmlFor="">{`${currentVideoHour}:${currentVideoMinutes}:${currentVideoSeconds}`}</label>
             <input
@@ -104,7 +128,7 @@ setSlowDownVideo
             <label htmlFor="">{`${totalVideoHours}:${totalVideoMinutes}:${totalVideoSeconds}`}</label>
           </div>
 
-          <div className="flex  w-full items-center justify-around gap-2  ">
+          <div className="w-full flex items-center justify-around gap-2">
             <div className="flex flex-1 items-center gap-2 ">
               <Volume volume={volume} />
               <input
@@ -117,23 +141,33 @@ setSlowDownVideo
             </div>
 
             <div className="flex flex-1 justify-center gap-2 items-center ">
-              <Icon icon={IoPlayBack} onClickFunction={()=>setSlowDownVideo()} />
-
-              {isPlaying ? (
+              <Icon
+                icon={IoPlayBack}
+                onClickFunction={() => handlePlaybackSpeed("slowDOWN")}
+              />
+              {playbackSpeed != 1 ? (
+                <Icon
+                  icon={IoPlay}
+                  size={28}
+                  onClickFunction={handlePlayAndPause}
+                />
+              ) : isPlaying ? (
                 <Icon
                   icon={IoPause}
-                  size={35}
-                  onClickFunction={setPlayingState}
+                  size={28}
+                  onClickFunction={handlePlayAndPause}
                 />
               ) : (
                 <Icon
                   icon={IoPlay}
-                  size={35}
-                  onClickFunction={setPlayingState}
+                  size={28}
+                  onClickFunction={handlePlayAndPause}
                 />
               )}
-
-              <Icon icon={IoPlayForward} onClickFunction={()=>setSpeedUpVideo()} />
+              <Icon
+                icon={IoPlayForward}
+                onClickFunction={() => handlePlaybackSpeed("speedUP")}
+              />
             </div>
 
             <div className="flex flex-1 flex-row justify-end  gap-2">
@@ -146,7 +180,13 @@ setSlowDownVideo
           </div>
         </div>
       </div>
-      <input hidden type="file" name="upload" id="upload" />
+      <input
+        hidden
+        type="file"
+        name="upload"
+        id="upload"
+        onLoadedData={() => console.log("Load")}
+      />
     </main>
   );
 }

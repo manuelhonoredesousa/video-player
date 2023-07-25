@@ -1,8 +1,12 @@
 import { ChangeEvent, useEffect, useState } from "react";
 
-export default function usePlayer(
-  $videoPlayer: React.RefObject<HTMLVideoElement>
-) {
+export type PlaybackSpeedOptionType = "speedUP" | "slowDOWN";
+interface PlaybackSpeedProps {
+  options?: PlaybackSpeedOptionType;
+  reset?: boolean;
+}
+
+export function usePlayer($videoPlayer: React.RefObject<HTMLVideoElement>) {
   const thereIsNotVolumeAtLocalStorage = !localStorage.getItem("volume");
   if (thereIsNotVolumeAtLocalStorage) {
     localStorage.setItem("volume", "25");
@@ -44,8 +48,7 @@ export default function usePlayer(
     $videoPlayer.current!.volume = volumeValue;
 
     $videoPlayer.current!.playbackRate = playbackSpeed;
-
-  }, [$videoPlayer, isPlaying, volume, playbackSpeed]); 
+  }, [$videoPlayer, isPlaying, volume, playbackSpeed]);
 
   // useEffect(() => {
   // setTotalVideoTimeLabel()
@@ -73,11 +76,13 @@ export default function usePlayer(
   //   };
   // }
 
-  function setPlayingState() {
+  function setPlayingState(status?: boolean) {
+    const newPlayState = status ? status : !isPlaying;
+
     setPlayerProprieties((prev) => {
       return {
         ...prev,
-        isPlaying: !prev.isPlaying,
+        isPlaying: newPlayState,
       };
     });
   }
@@ -139,35 +144,37 @@ export default function usePlayer(
       };
     });
   }
-  
-  function setSpeedUpVideo() {
-    const newPlaybackSpeed = 0.25;
-    const newPlaybackSpeedLimite = 2;
 
-    
-    if (playbackSpeed < newPlaybackSpeedLimite) {
-      console.log(playbackSpeed);
-      setPlayerProprieties((prev) => {
-        return {
-          ...prev,
-          playbackSpeed: prev.playbackSpeed + newPlaybackSpeed ,
-        };
-      });
-    }
-  }
-  function setSlowDownVideo() {
-    const newPlaybackSpeed = 0.25;
-    const newPlaybackSpeedLimite = 0.25;
+  function setPlaybackSpeed({ options, reset }: PlaybackSpeedProps) {
+    let newPlaybackSpeed: number;
+    const DefaultPlaybackSpeedValue = 0.25;
 
-    if (playbackSpeed > newPlaybackSpeedLimite) {
-      setPlayerProprieties((prev) => {
-        return {
-          ...prev,
-          playbackSpeed:  prev.playbackSpeed - newPlaybackSpeed,
-        };
-      });
+    if (reset) {
+      newPlaybackSpeed = 1;
+    } else {
+      if (options === "speedUP") {
+        const newPlaybackSpeedLimite = 2;
+
+        if (playbackSpeed < newPlaybackSpeedLimite) {
+          newPlaybackSpeed = playbackSpeed + DefaultPlaybackSpeedValue;
+        }
+      } else {
+        const newPlaybackSpeedLimite = 0.25;
+
+        if (playbackSpeed > newPlaybackSpeedLimite) {
+          newPlaybackSpeed = playbackSpeed - DefaultPlaybackSpeedValue;
+        }
+      }
     }
+
+    setPlayerProprieties((prev) => {
+      return {
+        ...prev,
+        playbackSpeed: newPlaybackSpeed,
+      };
+    });
   }
+
   function handleOnTimeVideoUpdate() {
     const { percentage, duration } = getCurrentVideoPropreties();
 
@@ -269,7 +276,6 @@ export default function usePlayer(
     handleOnTimeVideoUpdate,
     handleOnChangeVideo,
     handleOnLoadVideo,
-    setSpeedUpVideo,
-    setSlowDownVideo,
+    setPlaybackSpeed,
   };
 }
