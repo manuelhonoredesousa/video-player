@@ -1,50 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import {
-  IoFolderOpen,
-  IoPlay,
-  IoPause,
-  IoPlayForward,
-  IoPlayBack,
-  IoOpen,
-  IoExpand,
-} from "react-icons/io5";
-// import videoPath from "./assets/preview_sd.mp4";
-import videoPath from "./../../../../Users/Manuel/Videos/RapdoDeadpoolTauzRapTributo.mp4";
+import { useRef, useState } from "react";
 import { WindowButton } from "./components/Window-Button";
-import { usePlayer, PlaybackSpeedOptionType } from "./hooks/usePlayer";
-import { ChangeEvent, useRef, useState } from "react";
+import {  IoPlay, IoPause, IoPlayForward, IoPlayBack, IoOpen } from "react-icons/io5";
+
 import { Icon } from "./components/Icon";
 import { Volume } from "./components/Volume";
+
+import { usePlayer, PlaybackSpeedOptionType } from "./hooks/usePlayer";
+
 import thumbnail from "./assets/thumb_.png";
+import videoPath from "./assets/preview_sd.mp4";
 
 function App() {
   const $videoPlayer = useRef<HTMLVideoElement>(null);
-  const {
-    isPlaying,
-    volume,
-    currentVideoHour,
-    currentVideoMinutes,
-    currentVideoSeconds,
-    currentPercentage,
-    totalVideoHours,
-    totalVideoMinutes,
-    totalVideoSeconds,
-    playbackSpeed,
-    setVolume,
-    setPlayingState,
-    openFullScreen,
-    openPictureInPicture,
-    handleOnTimeVideoUpdate,
-    handleOnChangeVideo,
-    handleOnLoadVideo,
-    setPlaybackSpeed,
-  } = usePlayer($videoPlayer);
-
   const [mouseOverPlayer, setMouseOverPlayer] = useState<boolean>(false);
-  // handleOnLoadVideo()
-  // function handlePlaybackSpeedUp(){
-  //   setSpeedUpVideo({})
-  // }
+
+  const { isPlaying, volume, currentVideoHour, currentVideoMinutes, currentVideoSeconds, currentPercentage, totalVideoHours, totalVideoMinutes, totalVideoSeconds, playbackSpeed, setVolume, setPlayingState, openPictureInPicture, handleOnTimeVideoUpdate, handleOnChangeVideo, handleOnLoadVideo, setPlaybackSpeed } = usePlayer($videoPlayer);
+
 
   function handlePlaybackSpeed(opt: PlaybackSpeedOptionType) {
     if (isPlaying) setPlaybackSpeed({ options: opt });
@@ -57,6 +29,7 @@ function App() {
       setPlaybackSpeed({ reset: true });
     }
   }
+
   function handleOnMouseOverVideo(opt: "Over" | "Out") {
     if (opt == "Over") {
       setMouseOverPlayer(true);
@@ -65,20 +38,6 @@ function App() {
     }
   }
 
-  const handleFullScreenChange = () => {
-    const videoElement = videoRef.current;
-
-    if (document.fullscreenElement === videoElement) {
-      videoElement.pause();
-    }
-  };
-
-  const handleFullScreenExit = () => {
-    const videoElement = videoRef.current;
-    videoElement.pause();
-  };
-
-
   return (
     <main className="bg-wallpaper bg-no-repeat bg-cover bg-center h-screen flex items-center justify-center text-gray-100 ">
       <div
@@ -86,7 +45,6 @@ function App() {
         onMouseEnter={() => handleOnMouseOverVideo("Over")}
         onMouseLeave={() => handleOnMouseOverVideo("Out")}
       >
-        {/* <div className="bg-[red] w-4/5 items-center rounded-lg"> */}
 
         <div className="flex gap-1 p-2">
           <WindowButton color="#ed6a5e" />
@@ -105,84 +63,39 @@ function App() {
           onTimeUpdate={handleOnTimeVideoUpdate}
           onLoadedData={handleOnLoadVideo}
           poster={thumbnail}
- 
-          
-          // onFullScreenChange={handleFullScreenChange}
-          // onFullScreenExit={handleFullScreenExit}
-
-          onChangeCapture={()=> console.log("Obas")}
-
           onPlay={() => setPlayingState(true)}
           onPause={() => setPlayingState(false)}
-
-          // autoPlay
-          // controls
         ></video>
-        <div
-          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-          className={`bg-opacity-10 backdrop-blur-lg bg-white absolute left-[12.5%] bottom-[5%] flex flex-col p-2 w-[75%] items-center rounded-lg ${
-            !mouseOverPlayer && "hidden"
-          }`}
-        >
+        
+        <div data-mouseOverDisplay={mouseOverPlayer} className={`bg-opacity-10 backdrop-blur-lg bg-white absolute left-[12.5%] bottom-[5%] flex flex-col p-2 w-[75%] items-center rounded-lg data-[mouseOverDisplay=false]:hidden`}>
+
           <div className="w-full flex gap-2 items-center">
             <label htmlFor="">{`${currentVideoHour}:${currentVideoMinutes}:${currentVideoSeconds}`}</label>
-            <input
-              type="range"
-              className="flex-1 range accent-[#cf6247] h-1 transition"
-              min={0}
-              max={100}
-              value={currentPercentage}
-              onChange={handleOnChangeVideo}
-              // onTimeUpdate={()=>console.log(5555)}
-            />
+            <input type="range" className="flex-1 range accent-[#cf6247] h-1 transition" min={0} max={100} value={currentPercentage} onChange={handleOnChangeVideo}/>
             <label htmlFor="">{`${totalVideoHours}:${totalVideoMinutes}:${totalVideoSeconds}`}</label>
           </div>
 
           <div className="w-full flex items-center justify-around gap-2">
             <div className="flex flex-1 items-center gap-2 ">
               <Volume volume={volume} />
-              <input
-                type="range"
-                className=" accent-[#cf6247] h-1 w-20 transition"
-                value={volume}
-                onChange={setVolume}
-              />
+              <input type="range" className=" accent-[#cf6247] h-1 w-20 transition" value={volume} onChange={setVolume}/>
               {volume}
             </div>
 
             <div className="flex flex-1 justify-center gap-2 items-center ">
-              <Icon
-                icon={IoPlayBack}
-                onClickFunction={() => handlePlaybackSpeed("slowDOWN")}
-              />
-              {playbackSpeed != 1 ? (
-                <Icon
-                  icon={IoPlay}
-                  size={28}
-                  onClickFunction={handlePlayAndPause}
-                />
-              ) : isPlaying ? (
-                <Icon
-                  icon={IoPause}
-                  size={28}
-                  onClickFunction={handlePlayAndPause}
-                />
-              ) : (
-                <Icon
-                  icon={IoPlay}
-                  size={28}
-                  onClickFunction={handlePlayAndPause}
-                />
-              )}
-              <Icon
-                icon={IoPlayForward}
-                onClickFunction={() => handlePlaybackSpeed("speedUP")}
-              />
+              <Icon icon={IoPlayBack} onClickFunction={() => handlePlaybackSpeed("slowDOWN")} />
+              {
+                playbackSpeed != 1 
+                ? ( <Icon icon={IoPlay} size={28} onClickFunction={handlePlayAndPause} />) 
+                : isPlaying ? ( <Icon icon={IoPause} size={28} onClickFunction={handlePlayAndPause}/>) : ( <Icon icon={IoPlay} size={28} onClickFunction={handlePlayAndPause}/>)
+              }
+              <Icon icon={IoPlayForward} onClickFunction={() => handlePlaybackSpeed("speedUP")}/>
             </div>
+
             <div className="flex flex-1 flex-row justify-end  gap-2">
               <Icon icon={IoOpen} onClickFunction={openPictureInPicture} />
-              <Icon icon={IoExpand} onClickFunction={openFullScreen} />
             </div>
+
           </div>
         </div>
       </div>

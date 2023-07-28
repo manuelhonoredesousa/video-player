@@ -1,6 +1,7 @@
 import { ChangeEvent, useEffect, useState } from "react";
 
 export type PlaybackSpeedOptionType = "speedUP" | "slowDOWN";
+
 interface PlaybackSpeedProps {
   options?: PlaybackSpeedOptionType;
   reset?: boolean;
@@ -8,9 +9,9 @@ interface PlaybackSpeedProps {
 
 export function usePlayer($videoPlayer: React.RefObject<HTMLVideoElement>) {
   const thereIsNotVolumeAtLocalStorage = !localStorage.getItem("volume");
-  if (thereIsNotVolumeAtLocalStorage) {
-    localStorage.setItem("volume", "25");
-  }
+  
+  if (thereIsNotVolumeAtLocalStorage) { localStorage.setItem("volume", "25") }
+  
   const volumeAtLocalStorage = Number(localStorage.getItem("volume"));
 
   const [
@@ -50,37 +51,16 @@ export function usePlayer($videoPlayer: React.RefObject<HTMLVideoElement>) {
     $videoPlayer.current!.playbackRate = playbackSpeed;
   }, [$videoPlayer, isPlaying, volume, playbackSpeed]);
 
-  // useEffect(() => {
-  // setTotalVideoTimeLabel()
-  // }, [$videoPlayer.current?.duration]);
+  // function openFullScreen() {
+    // void $videoPlayer.current?.requestFullscreen();
+  // }
 
-  function openFullScreen() {
-    void $videoPlayer.current?.requestFullscreen();
-  }
   function openPictureInPicture() {
     void $videoPlayer.current?.requestPictureInPicture();
   }
-  // const handleTimeUpdate = () => {
-  // setCurrentTime(videoRef.current.currentTime);
-  // };
-
-  // function currentVideoTime() {
-  //   const totalSeconds = Math.floor($videoPlayer.current!.currentTime);
-  //   const minutes = Math.floor(totalSeconds / 60);
-  //   const seconds = totalSeconds % 60;
-
-  //   return {
-  //     minutes,
-  //     seconds,
-  //     //// seconds,
-  //   };
-  // }
+ 
 
   function setPlayingState(status: boolean) {
-    // const newPlayState = status ? status : !isPlaying;
-
-    // console.log(newPlayState);
-    
     setPlayerProprieties((prev) => {
       return {
         ...prev,
@@ -88,6 +68,7 @@ export function usePlayer($videoPlayer: React.RefObject<HTMLVideoElement>) {
       };
     });
   }
+
   function setVolume(value: ChangeEvent<HTMLInputElement>) {
     const volumeValue = Number(value.target.value);
     setPlayerProprieties((prev) => {
@@ -99,6 +80,7 @@ export function usePlayer($videoPlayer: React.RefObject<HTMLVideoElement>) {
 
     localStorage.setItem("volume", String(volumeValue));
   }
+
   function setPercentage(newPercentage: number) {
     setPlayerProprieties((prev) => {
       return {
@@ -107,6 +89,7 @@ export function usePlayer($videoPlayer: React.RefObject<HTMLVideoElement>) {
       };
     });
   }
+
   function setCurrentTimeLabel({
     hours,
     minutes,
@@ -125,6 +108,7 @@ export function usePlayer($videoPlayer: React.RefObject<HTMLVideoElement>) {
       };
     });
   }
+
   function handleOnLoadVideo() {
     setTotalVideoTimeLabel();
     setCurrentTimeLabel({ hours: "00", minutes: "00", seconds: "00" });
@@ -189,10 +173,6 @@ export function usePlayer($videoPlayer: React.RefObject<HTMLVideoElement>) {
     setCurrentTimeLabel({ hours, minutes, seconds });
   }
 
-  // const timeoutRef = useRef(null);
-  // const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
-  // const [timeoutId, setTimeoutId] = useState<number>(0);
-
   function beatifyCurrentTime(timeValue: number): string {
     return timeValue < 10 ? `0${timeValue}` : String(timeValue);
   }
@@ -226,10 +206,7 @@ export function usePlayer($videoPlayer: React.RefObject<HTMLVideoElement>) {
     return {
       time: videoCurrentTime,
       duration: videoDuration,
-      percentage: newCurrentPercentage,
-      // hours,
-      // minutes,
-      // seconds,
+      percentage: newCurrentPercentage
     };
   }
 
@@ -242,23 +219,11 @@ export function usePlayer($videoPlayer: React.RefObject<HTMLVideoElement>) {
       percentage: newCurrentPercentage,
     });
 
-    //  clearTimeout(timeoutId);
-
     $videoPlayer.current!.currentTime = newCurrentTime;
     setCurrentTimeLabel({ hours, minutes, seconds });
     setPercentage(newCurrentPercentage);
-    // setTimeout(() => {
-    // console.log("xxxx");
-    // }, 200);
-
-    // clearTimeout(newTimeoutId)
-    // setTimeoutId(newTimeoutId);
+    
   }
-
-  // $videoPlayer.current!.currentTime = newVideoCurrentTime;
-
-  // setPercentage(newCurrentPercentage);
-  // }
 
   return {
     isPlaying,
@@ -272,7 +237,7 @@ export function usePlayer($videoPlayer: React.RefObject<HTMLVideoElement>) {
     totalVideoSeconds,
     playbackSpeed,
     setPlayingState,
-    openFullScreen,
+    // openFullScreen,
     openPictureInPicture,
     setVolume,
     handleOnTimeVideoUpdate,
