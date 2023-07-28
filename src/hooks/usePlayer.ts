@@ -76,13 +76,15 @@ export function usePlayer($videoPlayer: React.RefObject<HTMLVideoElement>) {
   //   };
   // }
 
-  function setPlayingState(status?: boolean) {
-    const newPlayState = status ? status : !isPlaying;
+  function setPlayingState(status: boolean) {
+    // const newPlayState = status ? status : !isPlaying;
 
+    // console.log(newPlayState);
+    
     setPlayerProprieties((prev) => {
       return {
         ...prev,
-        isPlaying: newPlayState,
+        isPlaying: status,
       };
     });
   }

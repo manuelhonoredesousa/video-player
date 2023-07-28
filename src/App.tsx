@@ -3,35 +3,19 @@ import {
   IoFolderOpen,
   IoPlay,
   IoPause,
-  // IoStop,
-  // IoPlaySkipForward,
   IoPlayForward,
-  // IoPlaySkipBack,
   IoPlayBack,
-  // IoRepeat,
-  // IoList,
-  // IoCog,
-  // IoFileTray,
-  // IoFilm,
   IoOpen,
-  // IoSettings,
   IoExpand,
-  // IoScan,
 } from "react-icons/io5";
-import videoPath from "./../../../../Users/Manuel/Videos/Rap do Deadpool - Tauz RapTributo 15.mp4";
-// import videoPath from "./../../../../Users/Manuel/Desktop/ /Top Gun - Maverick 2022.mp4";
+// import videoPath from "./assets/preview_sd.mp4";
+import videoPath from "./../../../../Users/Manuel/Videos/RapdoDeadpoolTauzRapTributo.mp4";
 import { WindowButton } from "./components/Window-Button";
 import { usePlayer, PlaybackSpeedOptionType } from "./hooks/usePlayer";
 import { ChangeEvent, useRef, useState } from "react";
 import { Icon } from "./components/Icon";
 import { Volume } from "./components/Volume";
-
-// type volumeIcon =
-//   | "IoVolumeMute"
-//   | "IoVolumeOff"
-//   | "IoVolumeLow"
-//   | "IoVolumeMedium"
-//   | "IoVolumeHigh";
+import thumbnail from "./assets/thumb_.png";
 
 function App() {
   const $videoPlayer = useRef<HTMLVideoElement>(null);
@@ -68,7 +52,7 @@ function App() {
 
   function handlePlayAndPause() {
     if (playbackSpeed == 1) {
-      setPlayingState();
+      setPlayingState(!isPlaying);
     } else {
       setPlaybackSpeed({ reset: true });
     }
@@ -81,9 +65,24 @@ function App() {
     }
   }
 
+  const handleFullScreenChange = () => {
+    const videoElement = videoRef.current;
+
+    if (document.fullscreenElement === videoElement) {
+      videoElement.pause();
+    }
+  };
+
+  const handleFullScreenExit = () => {
+    const videoElement = videoRef.current;
+    videoElement.pause();
+  };
+
+
   return (
     <main className="bg-wallpaper bg-no-repeat bg-cover bg-center h-screen flex items-center justify-center text-gray-100 ">
-      <div className="bg-[#fdf8f4] w-4/5 items-center rounded-lg relative"
+      <div
+        className="bg-[#fdf8f4] w-4/5 items-center rounded-lg relative"
         onMouseEnter={() => handleOnMouseOverVideo("Over")}
         onMouseLeave={() => handleOnMouseOverVideo("Out")}
       >
@@ -105,14 +104,25 @@ function App() {
           ref={$videoPlayer}
           onTimeUpdate={handleOnTimeVideoUpdate}
           onLoadedData={handleOnLoadVideo}
-        
+          poster={thumbnail}
+ 
+          
+          // onFullScreenChange={handleFullScreenChange}
+          // onFullScreenExit={handleFullScreenExit}
+
+          onChangeCapture={()=> console.log("Obas")}
+
+          onPlay={() => setPlayingState(true)}
+          onPause={() => setPlayingState(false)}
 
           // autoPlay
           // controls
         ></video>
         <div
           // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-          className={`bg-opacity-10 backdrop-blur-lg bg-white absolute left-[12.5%] bottom-[5%] flex flex-col p-2 w-[75%] items-center rounded-lg ${!mouseOverPlayer && "hidden"}`}
+          className={`bg-opacity-10 backdrop-blur-lg bg-white absolute left-[12.5%] bottom-[5%] flex flex-col p-2 w-[75%] items-center rounded-lg ${
+            !mouseOverPlayer && "hidden"
+          }`}
         >
           <div className="w-full flex gap-2 items-center">
             <label htmlFor="">{`${currentVideoHour}:${currentVideoMinutes}:${currentVideoSeconds}`}</label>
@@ -169,24 +179,13 @@ function App() {
                 onClickFunction={() => handlePlaybackSpeed("speedUP")}
               />
             </div>
-
             <div className="flex flex-1 flex-row justify-end  gap-2">
-              <label htmlFor="upload">
-                <Icon icon={IoFolderOpen} />
-              </label>
               <Icon icon={IoOpen} onClickFunction={openPictureInPicture} />
               <Icon icon={IoExpand} onClickFunction={openFullScreen} />
             </div>
           </div>
         </div>
       </div>
-      <input
-        hidden
-        type="file"
-        name="upload"
-        id="upload"
-        onLoadedData={() => console.log("Load")}
-      />
     </main>
   );
 }
